@@ -45,4 +45,53 @@ RETURN path, [node in nodes(path) WHERE node:Match | [(p1)-[:WINNER]->(node)<-[:
 
 // Find all the finals
 MATCH path = (:Tournament)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<--(:Player)
-RETURN *
+RETURN *;
+
+// Finals lost in a row
+MATCH path = (t:Tournament)-[:NEXT_TOURNAMENT*]->(t2:Tournament),
+             (t)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:LOSER]-(winner)
+WITH nodes(path) AS tournaments, winner
+WITH tournaments, tournaments[-1] AS last, tournaments[0] AS first, winner
+WITH tournaments, winner, 
+     [(last)-[:NEXT_TOURNAMENT]->(next) | next][0] AS next,
+     [(previous)-[:NEXT_TOURNAMENT]->(first) | previous][0] AS previous
+WHERE all(t in tournaments[1..] 
+          WHERE (t)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:LOSER]-(winner)
+          AND not((next)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:LOSER]-(winner))
+          AND not((previous)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:LOSER]-(winner))
+)
+RETURN winner.name, [t IN tournaments | t.year], next.year, previous.year;
+
+// Finals won in a row
+MATCH path = (t:Tournament)-[:NEXT_TOURNAMENT*]->(t2:Tournament),
+             (t)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner)
+WITH nodes(path) AS tournaments, winner
+WITH tournaments, tournaments[-1] AS last, tournaments[0] AS first, winner
+WITH tournaments, winner, 
+     [(last)-[:NEXT_TOURNAMENT]->(next) | next][0] AS next,
+     [(previous)-[:NEXT_TOURNAMENT]->(first) | previous][0] AS previous
+WHERE all(t in tournaments[1..] 
+          WHERE (t)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner)
+          AND not((next)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner))
+          AND not((previous)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner))
+)
+RETURN winner.name, [t IN tournaments | t.year], next.year, previous.year;
+
+WITH ["mens", "womens"] AS shards
+UNWIND fabric.graphIds() AS id
+CALL {
+  MATCH path = (t:Tournament)-[:NEXT_TOURNAMENT*]->(t2:Tournament),
+              (t)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner)
+  WITH nodes(path) AS tournaments, winner
+  WITH tournaments, tournaments[-1] AS last, tournaments[0] AS first, winner
+  WITH tournaments, winner, 
+      [(last)-[:NEXT_TOURNAMENT]->(next) | next][0] AS next,
+      [(previous)-[:NEXT_TOURNAMENT]->(first) | previous][0] AS previous
+  WHERE all(t in tournaments[1..] 
+            WHERE (t)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner)
+            AND not((next)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner))
+            AND not((previous)<-[:IN_TOURNAMENT]-(:Match {round: "F"})<-[:WINNER]-(winner))
+  )
+  RETURN winner, tournaments
+}
+RETURN shards[id], winner, tournaments;
