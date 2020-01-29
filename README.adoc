@@ -2,6 +2,8 @@
 
 The code in this repository goes with the https://markhneedham.com/blog/2020/01/23/quick-graph-australian-open/ blog post
 
+image::images/aus-open-banner.png[]
+
 == Importing the data
 
 Import scripts can be found in the following files:
