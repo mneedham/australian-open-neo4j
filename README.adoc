@@ -1,3 +1,12 @@
 = QuickGraph: Australian Open
 
 The code in this repository goes with the https://markhneedham.com/blog/2020/01/23/quick-graph-australian-open/ blog post
+
+== Importing the data
+
+Import scripts can be found in the following files:
+
+* https://github.com/mneedham/australian-open-neo4j/blob/master/scripts/import_mens.cypher
+* https://github.com/mneedham/australian-open-neo4j/blob/master/scripts/import_womens.cypher
+
+And the scripts assume that Neo4j 4.0 is being used.
