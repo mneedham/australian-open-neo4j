@@ -10,3 +10,8 @@ Import scripts can be found in the following files:
 * https://github.com/mneedham/australian-open-neo4j/blob/master/scripts/import_womens.cypher
 
 And the scripts assume that Neo4j 4.0 is being used.
+
+== Querying the data
+
+If you want to read a narrative around the queries, check out the blog post.
+If you just want the raw queries you can find them in https://github.com/mneedham/australian-open-neo4j/blob/master/scripts/queries.cypher
