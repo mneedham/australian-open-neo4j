@@ -1,6 +1,6 @@
 = QuickGraph: Australian Open
 
-The code in this repository goes with the https://markhneedham.com/blog/2020/01/23/quick-graph-australian-open/ blog post
+The code in this repository goes with the https://markhneedham.com/blog/2020/01/23/quick-graph-australian-open/[QuickGraph #5: Australian Open^] blog post
 
 image::images/aus-open-banner.png[]
 
